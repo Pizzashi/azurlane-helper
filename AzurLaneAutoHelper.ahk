@@ -43,7 +43,7 @@ TimeOutTick(trigger)
     } else {
         helperActive := 1
         AlertShikikan("monitoring is now active", true)
-        SetTimer, ImportantEventsCheck, 3000
+        SetTimer, ImportantEventsCheck, 1000
         TimeOutTick("start")
     }
 return
@@ -58,21 +58,21 @@ ImportantEventsCheck:
         AlertShikikan("your boatgrills have finished the level they're farming")
         TimeOutTick("start")
         SetTimer, ImportantEventsCheck, Off
-        SetTimer, CheckLevelCompletion, 3000
+        SetTimer, CheckLevelCompletion, 1000
     }
     else if (dockIsFull) {
         TimeOutTick("stop")
         AlertShikikan("your dock is full")
         TimeOutTick("start")
         SetTimer, ImportantEventsCheck, Off
-        SetTimer, CheckDockSpace, 3000
+        SetTimer, CheckDockSpace, 1000
     }
     else if (foundBoat) {
         TimeOutTick("stop")
         AlertShikikan("you have found a new boatgrill")
         TimeOutTick("start")
         SetTimer, ImportantEventsCheck, Off
-        SetTimer, CheckBoatGrill, 3000
+        SetTimer, CheckBoatGrill, 1000
     }
 return
 
@@ -81,7 +81,7 @@ CheckLevelCompletion:
     if (levelIsComplete = 0)
     {
         FadeOut()
-        SetTimer, ImportantEventsCheck, 3000
+        SetTimer, ImportantEventsCheck, 1000
     }
 return
 
@@ -90,7 +90,7 @@ CheckDockSpace:
     if (dockIsFull = 0)
     {
         FadeOut()
-        SetTimer, ImportantEventsCheck, 3000
+        SetTimer, ImportantEventsCheck, 1000
     }
 return
 
@@ -99,7 +99,7 @@ CheckBoatGrill:
     if (foundBoat = 0)
     {
         FadeOut()
-        SetTimer, ImportantEventsCheck, 3000
+        SetTimer, ImportantEventsCheck, 1000
     }
 return
 
