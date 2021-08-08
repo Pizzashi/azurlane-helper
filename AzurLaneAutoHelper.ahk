@@ -6,7 +6,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 207  ; Replaces 'H on red'
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
-;@Ahk2Exe-SetVersion 0.2.0.0
+;@Ahk2Exe-SetVersion 0.2.1.0
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -80,7 +80,7 @@ CheckLevelCompletion:
     levelIsComplete := FindText(2212, 86, 2290, 112, 0, 0, bannerComplete)
     if (levelIsComplete = 0)
     {
-        FadeOut()
+        Gui, EventAlert:Destroy
         SetTimer, ImportantEventsCheck, 1000
     }
 return
@@ -89,7 +89,7 @@ CheckDockSpace:
     dockIsFull := FindText(2305, 242, 2389, 266, 0, 0, dockFullWarn)
     if (dockIsFull = 0)
     {
-        FadeOut()
+        Gui, EventAlert:Destroy
         SetTimer, ImportantEventsCheck, 1000
     }
 return
@@ -98,7 +98,7 @@ CheckBoatGrill:
     foundBoat := FindText(2100, 85, 2176, 115, 0, 0, newBoat)
     if (foundBoat = 0)
     {
-        FadeOut()
+        Gui, EventAlert:Destroy
         SetTimer, ImportantEventsCheck, 1000
     }
 return
