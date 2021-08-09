@@ -16,7 +16,10 @@ SetWorkingDir %A_ScriptDir%                     ; Needed by some functions to wo
 ListLines Off                                   ; Turns off logging script actions for improved performance
 #KeyHistory 0                                   ; Turns off loggins keystrokes for improved performance
 
-global APP_VERSION := "Azur Lane Auto Helper v0.2.2.0"
+global APP_VERSION := "Azur Lane Auto Helper v0.2.3.0"
+                    . "`n"
+                    . "Shift + F12 to toggle monitoring"
+                    . "`n"
 Menu, Tray, Tip, % APP_VERSION
 
 ; This code appears only in the compiled script
