@@ -1,16 +1,17 @@
 ﻿AlertShikikan(message, Destruct := false)
 {
     Global
-    local Enterprise := Assets . "\enty.png"
+    
+    enterpriseAvatar := Assets . "\enty.png"
 
     Gui, EventAlert:Destroy
 	Gui, EventAlert:New, +ToolWindow -Caption +AlwaysOnTop +HwndEventNotif
     Gui, EventAlert:Color, 999999
     Gui, EventAlert:Margin, 15, 10
 	Gui, EventAlert:Font, s14, Segoe UI
-    Gui, EventAlert:Add, Picture, h50 w-1, % Enterprise
+    Gui, EventAlert:Add, Picture, h50 w-1, % enterpriseAvatar
 	Gui, EventAlert:Add, Text, x+10 cWhite yp+11 Center, % "Shikikan, " message "."
-	Gui, EventAlert:Show, y20 x20
+	Gui, EventAlert:Show, y20 x20 NoActivate
 
     OnMessage(0x201, "FadeOut")
 
