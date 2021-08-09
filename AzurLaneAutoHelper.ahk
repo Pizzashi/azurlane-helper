@@ -6,7 +6,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 207  ; Replaces 'H on red'
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
-;@Ahk2Exe-SetVersion 0.2.2.0
+;@Ahk2Exe-SetVersion 0.2.3.0
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -36,19 +36,29 @@ bannerComplete := "|<Total Rewards>*181$69.zzzzzzzy7zzs07zz7zzkzk000zzszzy7y0007
 ; Check for events that require prompts every three seconds
 ; Switch is Shift + F12
 +F12::
+    Critical
     if (helperActive = 1) {
         helperActive := 0
-        AlertShikikan("monitoring is now off", true)
-        SetTimer, ImportantEventsCheck, Off
         Menu, Tray, Tip, % APP_VERSION . "`n" . "Monitoring is off."
+        AlertShikikan("monitoring is now off", true)
+        DisableAllTimers()
     } else {
         helperActive := 1
+        Menu, Tray, Tip, % APP_VERSION . "`n" . "Monitoring is on."
         AlertShikikan("monitoring is now active", true)
         SetTimer, ImportantEventsCheck, 1000
         TimeOutTick("start")
-        Menu, Tray, Tip, % APP_VERSION . "`n" . "Monitoring is on."
     }
 return
+
+DisableAllTimers()
+{
+    SetTimer, CheckLevelCompletion, Off
+    SetTimer, CheckDockSpace, Off
+    SetTimer, CheckBoatGrill, Off
+    SetTimer, ImportantEventsCheck, Off
+    SetTimer, TimeOut, Off
+}
 
 TimeOutTick(trigger)
 {
