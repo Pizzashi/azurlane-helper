@@ -1,4 +1,4 @@
-﻿AlertShikikan(message, Destruct := false)
+﻿AlertShikikan(message, autoDestruct := false)
 {
     Global
     
@@ -15,9 +15,9 @@
 
     OnMessage(0x201, "FadeOut")
 
-    if (Destruct) {
-        ; Wait three seconds before clearing the notif
-        Sleep, 3000
+    if (autoDestruct) {
+        ; Wait two seconds before clearing the notif
+        Sleep, 2000
         FadeOut()
     }
 }
