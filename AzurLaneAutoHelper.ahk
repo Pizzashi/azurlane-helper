@@ -7,7 +7,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
 ;@Ahk2Exe-SetCompanyName Furaico
-;@Ahk2Exe-SetVersion 0.3.0.0
+;@Ahk2Exe-SetVersion 0.3.1.0
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -19,10 +19,11 @@ ListLines Off                                   ; Turns off logging script actio
 #KeyHistory 0                                   ; Turns off loggins keystrokes for improved performance
 */
 
-global APP_VERSION := "Azur Lane Auto Helper v0.3.0.0"
+global APP_VERSION := "Azur Lane Auto Helper v0.3.1.0"
                     . "`n"
                     . "Shift + F12 to toggle monitoring"
                     . "`n"
+                    . "Shift + F11 to toggle autopilot"
 Menu, Tray, Tip, % APP_VERSION
 
 ; This code appears only in the compiled script
@@ -40,6 +41,7 @@ global LEVEL_COMPLETE := "|<>*181$69.zzzzzzzy7zzs07zz7zzkzk000zzszzy7y0007zz7zzk
 , NEW_SHIP := "|<>*137$71.zzy1k3y0E007zsw3U7y0UU0Dy1s70Dw1100zs3kC0Qs2201jk3UQ01k4403TU70s03U0807z0C1k0700E0Dy0A3U0C01k0Tw0M700Q03U0zs0kC07s0701jk0UQ0zs0C07TU00s1zk0Q0Sz001k3zU0s7xy003U7z01tzXw0070Dy07zs7s00C0TQ0DC0Dk00Q0ks0yE0TU00s01kDwU0z001k03lzk01y103U07zzU03w20700Dzz047s60C01zzy08DkA0Q0DzzsUETUM0s3zzzl1Uz0s1kzzzzU31"
 , PARTY_ANNIHILATED := "|<>*164$67.ySnrkr/ST30jDNvkPBjD9UH3gRtxCrbjw9Zq6wSDPnny5qPPT77htwSHkBgDsVqwzaNM6r7yIvSTvzVtPnn/BjDNzkwhtsBmk01U4"
 , IS_MONITORING := false
+, AUTOPILOT_MODE := false
 ; Add ran out of oil case
 
 ; Check for events that require prompts every three seconds
@@ -49,21 +51,41 @@ global LEVEL_COMPLETE := "|<>*181$69.zzzzzzzy7zzs07zz7zzkzk000zzszzy7y0007zz7zzk
 
     if (IS_MONITORING) {
         IS_MONITORING := false
-        TrayStatus("off")
+        UpdateTrayStatus()
         AlertShikikan("monitoring is now off", true)
         DisableAllTimers()
     } else {
         IS_MONITORING := true
-        TrayStatus("on")
+        UpdateTrayStatus()
         AlertShikikan("monitoring is now active", true)
         SetTimer, ImportantEventsCheck, 1000
         TimeOutTick("start")
     }
 return
 
-TrayStatus(status)
++F11::
+    Critical
+    
+    if (AUTOPILOT_MODE) {
+        AUTOPILOT_MODE := false
+        UpdateTrayStatus()
+        AlertShikikan("autopilot is now off", true)
+    }
+    else {
+        AUTOPILOT_MODE := true
+        UpdateTrayStatus()
+        AlertShikikan("autopilot is now on", true)
+    }
+return
+
+; Depends on the superglobal variables IS_MONITORING and AUTOPILOT_MODE
+UpdateTrayStatus()
 {
-    Menu, Tray, Tip, % APP_VERSION . "`n" . "Monitoring is " status "."
+    monitoringStatus := (IS_MONITORING) ? "on" : "off"
+    , autopilotStatus := (AUTOPILOT_MODE) ? "on" : "off"
+    Menu, Tray, Tip, % APP_VERSION . "`n`n"
+                                   . "Monitoring: " monitoringStatus "`n"
+                                   . "Autopilot: " autopilotStatus 
 }
 
 DisableAllTimers()
@@ -88,18 +110,29 @@ TimeOutTick(trigger)
 
 ImportantEventAlert(message)
 {
-    Global
-    TimeOutTick("stop")
+    ResetTimeOut()
     AlertShikikan(message)
-    TimeOutTick("start")
     SetTimer, ImportantEventsCheck, Off
+}
+
+ResetTimeOut()
+{
+    TimeOutTick("stop")
+    TimeOutTick("start")
 }
 
 ImportantEventsCheck:
     if (FindText(2212, 86, 2290, 112, 0, 0, LEVEL_COMPLETE)) ; Level is complete
     {
-        ImportantEventAlert("your boatgrills have finished the level they're farming")
-        SetTimer, CheckLevelCompletion, 1000
+        if (AUTOPILOT_MODE) { ; Automatically click continue
+        CoordMode, Mouse, Screen
+        MouseGetPos, prevCurX, prevCurY	; Previous mouse position
+        MouseClick, Left, 2508, 425, 1, 0
+        MouseMove, prevCurX, prevCurY
+        } else {
+            ImportantEventAlert("your boatgrills have finished the level they're farming")
+            SetTimer, CheckLevelCompletion, 1000
+        }
     }
     else if (FindText(2305, 242, 2389, 266, 0, 0, DOCK_FULL)) ; Dock is full
     {
@@ -162,7 +195,7 @@ TimeOut:
     DisableAllTimers()
     IS_MONITORING := false
     AlertShikikan("it looks like you're not farming. I'll stop monitoring to save resources")
-    TrayStatus("off")
+    UpdateTrayStatus()
 return
 
 QuitHelper:
