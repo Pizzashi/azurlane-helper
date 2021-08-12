@@ -1,0 +1,30 @@
+global LEVEL_COMPLETE := "|<Total>*178$60.k07zzzzzz3U07zzlzzz3U07zzVzzz3U07zzVzzz3z3zVz0Dkz3z3y0S0C0D3z3w0C0C073z3w460CA73z3sC7Vzy73z3sS3Vzs73z3sT3Vz073z3sT3Vy073z3sS3VwC73z3sC7VwC73z3w07Uw471z3w0DUA07Uz3y0TkC07Uz3zUzsD37kU"
+, DOCK_FULL := "|<expand>*175$61.zzzzzzzzzyTzzzzzzzzyDzzzzzzzzz7zzzzzzzzzXVllYDUwlw1UQFk3UC0Q0X68sFn70CAHXUwMTXX7601kyCC0ln700sT760MtXWDs7X2AAQsl2QFk306CQ0kAMs3k37C0QCCA3wHXblDzzyDzzzzzzzzz7zzzzzzzzzXzzzzzz"
+, NEW_SHIP := "|<NEW>*132$69.zk707y0M000yy0s0zk3000D7k707y00801sS0s0zk0100D3k707700801sS0s00s01U0D1k700700A01sC0s00s01U0C1k700700A01k60s01s03U0S0k700T00Q03k20s0Ts03U0S0E707z00S03k00s0zw03k3y00707zU0S1zU00s0zw03lzk00707zU0Tzk000s0yw03zs0007077U0wM0000s00w0za00007007Uzwk0000s00yTza00407007zzwU00U0s00zzz40040700DzzsU04"
+, PARTY_ANNIHILATED := "|<UPGRADE>*159$57.Ttz0kTD0s1v0lolltXDD9UzbC7D9ttC7wtYttDD9UkkQnD89t0a63aNtDD9wwqM3D9tlDXatD9nD4Ny0r1t0s47DwSwTcT1U"
+, IS_MONITORING := false
+, AUTOPILOT_MODE := false
+; Add ran out of oil case
+
+class Event
+{
+    levelComplete()
+    {
+        return FindText(2197, 95, 2259, 117, 0, 0, LEVEL_COMPLETE)
+    }
+
+    newShip()
+    {
+        return FindText(2075, 89, 2153, 123, 0, 0, NEW_SHIP)
+    }
+
+    dockFull()
+    {
+        return FindText(2358, 268, 2422, 290, 0, 0, DOCK_FULL)
+    }
+
+    partyAnnihilated()
+    {
+        return FindText(2214, 339, 2278, 357, 0, 0, PARTY_ANNIHILATED)
+    }
+}
