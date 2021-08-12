@@ -7,7 +7,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
 ;@Ahk2Exe-SetCompanyName Furaico
-;@Ahk2Exe-SetVersion 0.3.2.0
+;@Ahk2Exe-SetVersion 0.3.2.1
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -19,7 +19,7 @@ ListLines Off                                   ; Turns off logging script actio
 #KeyHistory 0                                   ; Turns off loggins keystrokes for improved performance
 */
 
-global APP_VERSION := "Azur Lane Auto Helper v0.3.2.0"
+global APP_VERSION := "Azur Lane Auto Helper v0.3.2.1"
                     . "`n"
                     . "Shift + F12 to toggle monitoring"
                     . "`n"
@@ -129,6 +129,7 @@ ImportantEventsCheck:
     {
         if (AUTOPILOT_MODE) { ; Automatically click continue
             ClickContinue()
+            ResetTimeOut()
         } else {
             ImportantEventAlert("your boatgrills have finished the level they're farming")
             SetTimer, CheckLevelCompletion, 1000
