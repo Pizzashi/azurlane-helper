@@ -7,7 +7,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
 ;@Ahk2Exe-SetCompanyName Furaico
-;@Ahk2Exe-SetVersion 0.3.2.1
+;@Ahk2Exe-SetVersion 0.3.3.0
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -19,7 +19,7 @@ ListLines Off                                   ; Turns off logging script actio
 #KeyHistory 0                                   ; Turns off loggins keystrokes for improved performance
 */
 
-global APP_VERSION := "Azur Lane Auto Helper v0.3.2.1"
+global APP_VERSION := "Azur Lane Auto Helper v0.3.3.0"
                     . "`n"
                     . "Shift + F12 to toggle monitoring"
                     . "`n"
@@ -73,12 +73,19 @@ return
 
 ClickContinue()
 {
-    SetBatchLines, -1
-    CoordMode, Mouse, Screen
-    MouseGetPos, prevCurX, prevCurY	; Previous mouse position
-    MouseClick, Left, 2517, 462, 1, 0
-    MouseMove, prevCurX, prevCurY
-    SetBatchLines, 20ms
+    ; https://www.autohotkey.com/boards/viewtopic.php?f=7&t=33596
+    ; ctrl + f: "click without moving the cursor"
+
+    ; Arbitrary, point this to where bluestacks is (anywhere WITHIN the game screen)
+    ; Note: Try to find out why f***ing hWnd := Winexist() does not freaking work
+    bluestacksX := 2000, bluestacksY := 400
+
+    if !hWnd := DllCall("user32\WindowFromPoint", "UInt64", (bluestacksX & 0xFFFFFFFF)|(bluestacksY << 32), "Ptr")
+        return
+
+    ; the X and Y are arbitrary...
+    ControlClick,, % "ahk_id " hWnd,,,, NA x590 y435
+    return
 }
 
 ; Depends on the superglobal variables IS_MONITORING and AUTOPILOT_MODE
@@ -128,8 +135,8 @@ ImportantEventsCheck:
     if (Event.levelComplete()) ; Level is complete
     {
         if (AUTOPILOT_MODE) { ; Automatically click continue
-            ClickContinue()
             ResetTimeOut()
+            ClickContinue()
         } else {
             ImportantEventAlert("your boatgrills have finished the level they're farming")
             SetTimer, CheckLevelCompletion, 1000
