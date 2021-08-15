@@ -7,7 +7,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
 ;@Ahk2Exe-SetCompanyName Furaico
-;@Ahk2Exe-SetVersion 0.3.3.0
+;@Ahk2Exe-SetVersion 0.4.0.0
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -19,7 +19,7 @@ ListLines Off                                   ; Turns off logging script actio
 #KeyHistory 0                                   ; Turns off loggins keystrokes for improved performance
 */
 
-global APP_VERSION := "Azur Lane Auto Helper v0.3.3.0"
+global APP_VERSION := "Azur Lane Auto Helper v0.4.0.0"
                     . "`n"
                     . "Shift + F12 to toggle monitoring"
                     . "`n"
@@ -132,6 +132,7 @@ ResetTimeOut()
 }
 
 ImportantEventsCheck:
+    ; Arrange the events from likely to the most unlikely for faster performance
     if (Event.levelComplete()) ; Level is complete
     {
         if (AUTOPILOT_MODE) { ; Automatically click continue
@@ -156,6 +157,11 @@ ImportantEventsCheck:
     {
         ImportantEventAlert("the farming party was defeated")
         SetTimer, CheckDefeatedWindow, 1000
+    }
+    else if (Event.oilDepleted()) ; Ran out of oil
+    {
+        ImportantEventAlert("your oil supply has ran out")
+        SetTimer, CheckDepletedOil, 1000
     }
 return
 
@@ -193,6 +199,15 @@ CheckDefeatedWindow:
     {
         Gui, EventAlert:Destroy
         SetTimer, CheckDefeatedWindow, Off
+        SetTimer, ImportantEventsCheck, 1000
+    }
+return
+
+CheckDepletedOil:
+    if !(Event.oilDepleted()) ; Buy more oil window is closed
+    {
+        Gui, EventAlert:Destroy
+        SetTimer, CheckDepletedOil, Off
         SetTimer, ImportantEventsCheck, 1000
     }
 return
