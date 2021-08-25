@@ -1,7 +1,10 @@
 ﻿NotificationPush(pushMessage)
 {
     receivingDevices := "Baconfry" ; Use "Baconfry,Fartphone,OtherPhoneName" for multiple devices
-    keyApi := "826d9b058a994e5f95f54253bc22f38e"
+    ; In the Authentication file, use
+    ; keyApi := [key for api]
+    ; keyApi := 0123456789101112131415
+    #Include Authentication
     notifIcon := "https://i.ibb.co/7yz04fv/L4egc3-U-252525255-B1-252525255-D.png"
     notifTitle := "Azur Lane Helper"
     notifMessage := pushMessage
