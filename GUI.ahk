@@ -1,7 +1,11 @@
-﻿AlertShikikan(message, autoDestruct := false)
+﻿AlertShikikan(message, autoDestruct := false, pushNotifications := true)
 {
     Global
     
+    ; If push notifications for phone were turned on
+    if (NOTIFY_EVENTS && pushNotifications)
+        NotificationPush("Shikikan, " . message ".")
+
     enterpriseAvatar := Assets . "\enty.png"
 
     Gui, EventAlert:Destroy

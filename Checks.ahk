@@ -6,6 +6,7 @@ global LEVEL_COMPLETE := "|<Total>*178$60.k07zzzzzz3U07zzlzzz3U07zzVzzz3U07zzVzz
 , OIL_RANOUTP2 := "|<You need>*171$62.CTzzzzzzzy37zzzzzzzzUHVlbs7VsC0YkANy0kA308Mn6TaAnAFX6AFbtW0k4MlX4NyMUA36AMn4TaAzDlX70k7tX0kC0lsS9yMsD3UM"
 , IS_MONITORING := false
 , AUTOPILOT_MODE := false
+, NOTIFY_EVENTS := false
 
 class Event
 {

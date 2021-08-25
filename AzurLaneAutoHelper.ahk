@@ -7,7 +7,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
 ;@Ahk2Exe-SetCompanyName Furaico
-;@Ahk2Exe-SetVersion 0.4.0.1
+;@Ahk2Exe-SetVersion 0.5.0.0
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -19,11 +19,7 @@ ListLines Off                                   ; Turns off logging script actio
 #KeyHistory 0                                   ; Turns off loggins keystrokes for improved performance
 */
 
-global APP_VERSION := "Azur Lane Auto Helper v0.4.0.1"
-                    . "`n"
-                    . "Shift + F12 to toggle monitoring"
-                    . "`n"
-                    . "Shift + F11 to toggle autopilot"
+global APP_VERSION := "Azur Lane Auto Helper v0.5.0.0"
 Menu, Tray, Tip, % APP_VERSION
 
 ; This code appears only in the compiled script
@@ -36,21 +32,29 @@ Menu, Tray, Add, Exit, QuitHelper
 #Include Checks.ahk
 #Include Assets.ahk
 #Include GUI.ahk
+#Include Push.ahk
+
+UpdateTrayStatus() ; Initial tray update
+
+return
 
 ; Check for events that require prompts every three seconds
 ; Switch is Shift + F12
+; Switch for Autopilot mode is Shift + F11
+; Switch for phone notifications is Shift + F10
+
 +F12::
     Critical
 
     if (IS_MONITORING) {
         IS_MONITORING := false
         UpdateTrayStatus()
-        AlertShikikan("monitoring is now off", true)
+        AlertShikikan("monitoring is now off", true, false)
         DisableAllTimers()
     } else {
         IS_MONITORING := true
         UpdateTrayStatus()
-        AlertShikikan("monitoring is now active", true)
+        AlertShikikan("monitoring is now active", true, false)
         SetTimer, ImportantEventsCheck, 1000
         TimeOutTick("start")
     }
@@ -62,12 +66,27 @@ return
     if (AUTOPILOT_MODE) {
         AUTOPILOT_MODE := false
         UpdateTrayStatus()
-        AlertShikikan("autopilot is now off", true)
+        AlertShikikan("autopilot is now off", true, false)
     }
     else {
         AUTOPILOT_MODE := true
         UpdateTrayStatus()
-        AlertShikikan("autopilot is now on", true)
+        AlertShikikan("autopilot is now on", true, false)
+    }
+return
+
++F10::
+    Critical
+    
+    if (NOTIFY_EVENTS) {
+        NOTIFY_EVENTS := false
+        UpdateTrayStatus()
+        AlertShikikan("phone notifications are now off", true, false)
+    }
+    else {
+        NOTIFY_EVENTS := true
+        UpdateTrayStatus()
+        AlertShikikan("phone notifications are now on", true)
     }
 return
 
@@ -93,9 +112,11 @@ UpdateTrayStatus()
 {
     monitoringStatus := (IS_MONITORING) ? "on" : "off"
     , autopilotStatus := (AUTOPILOT_MODE) ? "on" : "off"
+    , pushNotifStatus := (NOTIFY_EVENTS) ? "on" : "off"
     Menu, Tray, Tip, % APP_VERSION . "`n`n"
                                    . "Monitoring: " monitoringStatus "`n"
-                                   . "Autopilot: " autopilotStatus 
+                                   . "Autopilot: " autopilotStatus "`n"
+                                   . "Push Notifs: " pushNotifStatus
 }
 
 DisableAllTimers()
@@ -111,7 +132,7 @@ DisableAllTimers()
 TimeOutTick(trigger)
 {
     if (trigger = "start") {
-        SetTimer, TimeOut, -1800000 ; Turn off monitoring after 30 minutes to save resources
+        SetTimer, TimeOut, -3600000 ; Turn off monitoring after an hour to save resources
     } else if (trigger = "stop") {
         SetTimer, TimeOut, Off
     }
