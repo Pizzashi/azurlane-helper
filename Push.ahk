@@ -1,10 +1,20 @@
-﻿NotificationPush(pushMessage)
+﻿NotificationPush(pushMessage, testMode := false)
 {
    receivingDevices := "Baconfry" ; Use "Baconfry,Fartphone,OtherPhoneName" for multiple devices
    ; In the AuthKey.lic file, do:
    ; keyApi := [key for api]
    ; e.g. keyApi := 0123456789101112131415
    #Include AuthKey.lic
+   if (testMode) {
+      ; Check if AuthKey was properly set up
+      if (keyApi = "INSERT_KEY_HERE" || keyApi = "") {
+         Msgbox, 0, % "FATAL ERROR", % "Please set the authentication key correctly."
+         ExitApp
+      } else {
+         return
+      }
+   }
+
    notifIcon := "https://i.ibb.co/7yz04fv/L4egc3-U-252525255-B1-252525255-D.png"
    notifTitle := "Azur Lane Helper"
    notifMessage := pushMessage
@@ -21,6 +31,8 @@
    oPushRequest.open("GET", notificationCode)
    oPushRequest.send()
 }
+
+NotificationPush("Testing the validity of your authentication key...", true) ; Test if there's a proper authentication key
 
 ; https://www.autohotkey.com/boards/viewtopic.php?p=372134&sid=6ccacfcfd2eb820d173a4a1abc6e9238#p372134
 UrlEncode(str, encode := true, component := true) {
