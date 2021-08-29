@@ -26,12 +26,14 @@
                      . "&title=" . UrlEncode(notifTitle)
                      . "&icon=" . UrlEncode(notifIcon)
                      . "&smallicon=" . UrlEncode(notifIcon)                  
-                     
-   oPushRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-   oPushRequest.open("GET", notificationCode)
-   try {
+   try
+   {
+      oPushRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+      oPushRequest.open("GET", notificationCode)
       oPushRequest.send()
-   } catch errorCode {
+   }
+   catch errorCode
+   {
       Msgbox, 0, % "Error", % "I can't seem to reach the server to send push notifications. Please make sure the Helper can access the Internet."
    }
 }
