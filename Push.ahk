@@ -8,7 +8,7 @@
    if (testMode) {
       ; Check if AuthKey was properly set up
       if (keyApi = "INSERT_KEY_HERE" || keyApi = "") {
-         Msgbox, 0, % "FATAL ERROR", % "Please set the authentication key correctly."
+         Msgbox, 0, % "Fatal Error", % "Please set the authentication key correctly."
          ExitApp
       } else {
          return
@@ -29,7 +29,11 @@
                      
    oPushRequest := ComObjCreate("WinHttp.WinHttpRequest.5.1")
    oPushRequest.open("GET", notificationCode)
-   oPushRequest.send()
+   try {
+      oPushRequest.send()
+   } catch errorCode {
+      Msgbox, 0, % "Error", % "I can't seem to reach the server to send push notifications. Please make sure the Helper can access the Internet."
+   }
 }
 
 NotificationPush("Testing the validity of your authentication key...", true) ; Test if there's a proper authentication key
