@@ -95,16 +95,22 @@ ClickContinue()
     ; https://www.autohotkey.com/boards/viewtopic.php?f=7&t=33596
     ; ctrl + f: "click without moving the cursor"
 
-    ; Arbitrary, point this to where bluestacks is (anywhere WITHIN the game screen)
-    ; Note: Try to find out why f***ing hWnd := Winexist() does not freaking work
-    bluestacksX := 2000, bluestacksY := 400
-
-    if !hWnd := DllCall("user32\WindowFromPoint", "UInt64", (bluestacksX & 0xFFFFFFFF)|(bluestacksY << 32), "Ptr")
+    ; Make sure to rename the Bluestacks emulator containing Azur Lane to "Azur Lane"
+    WinGetPos, bluestacksX, bluestacksY, bluestacksW, bluestacksH, Azur Lane
+    
+    if (bluestacksX = "" || bluestacksX < 0) {
+        Msgbox, 0, % " Azur Lane Helper: Autoclick Error", % "Azur Lane Window was not found. Please make sure that the emulator is visible on the screen."
         return
+    }
+    
+    ; clickX and clickY values were retrieved with experimental methods using proportions
+    ; Bluestacks' toolbar is a flat 40 (no matter the resolution), and it's not included in ControlClick's scope
+    clickX := "x" . ( (bluestacksW)*5 )//8
+    , clickY := "y" . ( (bluestacksH)*13 )//15 - 40
 
-    ; the X and Y are arbitrary...
-    ControlClick,, % "ahk_id " hWnd,,,, NA x590 y435
-    return
+    emuHwnd := DllCall("user32\WindowFromPoint", "UInt64", (bluestacksX+100 & 0xFFFFFFFF)|(bluestacksY+100 << 32), "Ptr")
+            
+    ControlClick,, % "ahk_id " emuHwnd,,,, NA %clickX% %clickY%
 }
 
 ; Depends on the superglobal variables IS_MONITORING and AUTOPILOT_MODE
