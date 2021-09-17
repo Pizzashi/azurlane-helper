@@ -7,7 +7,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
 ;@Ahk2Exe-SetCompanyName Furaico
-;@Ahk2Exe-SetVersion 0.5.0.3
+;@Ahk2Exe-SetVersion 0.5.1.3
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -19,7 +19,7 @@ ListLines Off                                   ; Turns off logging script actio
 #KeyHistory 0                                   ; Turns off loggins keystrokes for improved performance
 */
 
-global APP_VERSION := "Azur Lane Auto Helper v0.5.0.3"
+global APP_VERSION := "Azur Lane Auto Helper v0.5.1.3"
 Menu, Tray, Tip, % APP_VERSION
 
 ; This code appears only in the compiled script
@@ -52,6 +52,7 @@ return
         AlertShikikan("monitoring is now off", true, false)
         DisableAllTimers()
     } else {
+        RetrieveEmuPos()
         IS_MONITORING := true
         UpdateTrayStatus()
         AlertShikikan("monitoring is now active", true, false)
@@ -89,6 +90,21 @@ return
         AlertShikikan("phone notifications are now on", true, true, false)
     }
 return
+
+RetrieveEmuPos()
+{
+    WinGetPos, BLUESTACKS_X, BLUESTACKS_Y, BLUESTACKS_W, BLUESTACKS_H, Azur Lane
+    ; Exclude the emulator's toolbar in the dimensions
+    BLUESTACKS_Y += 40, BLUESTACKS_H -= 40
+    if (BLUESTACKS_X = "" || BLUESTACKS_X < 0) {
+        Msgbox, 0, % " Azur Lane Helper: Monitoring error", % "Azur Lane Window was not found. Please make sure that it is visible on the screen and recalibrate by restarting the monitoring status (Shift + F12). " . "X: " X . " Y: " Y "." 
+        exit
+    }
+
+    Msgbox, 4, % " Azur Lane Helper", % "The position and dimensions of Bluestacks are:`n" "X: " BLUESTACKS_X "`nY: " BLUESTACKS_Y "`nW: " BLUESTACKS_W "`nH: " BLUESTACKS_H "`n`nIf these are correct, press YES; otherwise press NO and recalibrate by pressing Shift+F12 again."
+    IfMsgBox, No
+        exit
+}
 
 ClickContinue()
 {
