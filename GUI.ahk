@@ -34,4 +34,5 @@ FadeOut()
     Global
     ; This is a fadeout animation that lasts for 300 ms
     DllCall("AnimateWindow", "UInt", EventNotif, "Int", 300, "UInt", 0x90000)
+    Gui, EventAlert:Destroy
 }
