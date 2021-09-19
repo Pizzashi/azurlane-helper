@@ -7,7 +7,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
 ;@Ahk2Exe-SetCompanyName Furaico
-;@Ahk2Exe-SetVersion 0.5.1.3
+;@Ahk2Exe-SetVersion 0.5.1.4
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -19,7 +19,7 @@ ListLines Off                                   ; Turns off logging script actio
 #KeyHistory 0                                   ; Turns off loggins keystrokes for improved performance
 */
 
-global APP_VERSION := "Azur Lane Auto Helper v0.5.1.3"
+global APP_VERSION := "Azur Lane Auto Helper v0.5.1.4"
 Menu, Tray, Tip, % APP_VERSION
 
 ; This code appears only in the compiled script
@@ -93,7 +93,9 @@ return
 
 RetrieveEmuPos()
 {
+    ; Make sure to rename the Bluestacks emulator containing Azur Lane to "Azur Lane"
     WinGetPos, BLUESTACKS_X, BLUESTACKS_Y, BLUESTACKS_W, BLUESTACKS_H, Azur Lane
+    ; Bluestacks' toolbar is a flat 40 (no matter the resolution), and it's not included in ControlClick's scope
     ; Exclude the emulator's toolbar in the dimensions
     BLUESTACKS_Y += 40, BLUESTACKS_H -= 40
     if (BLUESTACKS_X = "" || BLUESTACKS_X < 0) {
@@ -110,21 +112,12 @@ ClickContinue()
 {
     ; https://www.autohotkey.com/boards/viewtopic.php?f=7&t=33596
     ; ctrl + f: "click without moving the cursor"
-
-    ; Make sure to rename the Bluestacks emulator containing Azur Lane to "Azur Lane"
-    WinGetPos, bluestacksX, bluestacksY, bluestacksW, bluestacksH, Azur Lane
     
-    if (bluestacksX = "" || bluestacksX < 0) {
-        Msgbox, 0, % " Azur Lane Helper: Autoclick Error", % "Azur Lane Window was not found. Please make sure that the emulator is visible on the screen."
-        return
-    }
-    
-    ; clickX and clickY values were retrieved with experimental methods using proportions
-    ; Bluestacks' toolbar is a flat 40 (no matter the resolution), and it's not included in ControlClick's scope
-    clickX := "x" . ( (bluestacksW)*5 )//8
-    , clickY := "y" . ( (bluestacksH)*13 )//15 - 40
+    ; clickX and clickY values were retrieved with experimental methods using proportions  
+    clickX := "x" . ( (BLUESTACKS_W)*5 )//8
+    , clickY := "y" . ( (BLUESTACKS_H)*13 )//15
 
-    emuHwnd := DllCall("user32\WindowFromPoint", "UInt64", (bluestacksX+100 & 0xFFFFFFFF)|(bluestacksY+100 << 32), "Ptr")
+    emuHwnd := DllCall("user32\WindowFromPoint", "UInt64", (BLUESTACKS_X+100 & 0xFFFFFFFF)|(BLUESTACKS_Y+100 << 32), "Ptr")
             
     ControlClick,, % "ahk_id " emuHwnd,,,, NA %clickX% %clickY%
 }
