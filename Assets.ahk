@@ -12,5 +12,6 @@ OnExit("ClearAssets")
 
 ClearAssets()
 {
+    Global
     FileRemoveDir, %Assets%, 1
 }
