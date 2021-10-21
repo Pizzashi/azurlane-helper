@@ -7,7 +7,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
 ;@Ahk2Exe-SetCompanyName Furaico
-;@Ahk2Exe-SetVersion 0.5.1.4
+;@Ahk2Exe-SetVersion 0.5.2.0
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -19,7 +19,7 @@ ListLines Off                                   ; Turns off logging script actio
 #KeyHistory 0                                   ; Turns off loggins keystrokes for improved performance
 */
 
-global APP_VERSION := "Azur Lane Auto Helper v0.5.1.4"
+global APP_VERSION := "Azur Lane Auto Helper v0.5.2.0"
 Menu, Tray, Tip, % APP_VERSION
 
 ; This code appears only in the compiled script
@@ -42,6 +42,16 @@ return
 ; Switch is Shift + F12
 ; Switch for Autopilot mode is Shift + F11
 ; Switch for phone notifications is Shift + F10
+; Switch for Manual Play assistant is Shift + F9
+
+global MANUAL_PLAY := false
+, IS_MONITORING := false
+, AUTOPILOT_MODE := false
+, NOTIFY_EVENTS := false
+, BLUESTACKS_X := ""
+, BLUESTACKS_Y := ""
+, BLUESTACKS_W := ""
+, BLUESTACKS_H := ""
 
 +F12::
     Critical
@@ -52,9 +62,17 @@ return
         AlertShikikan("monitoring is now off", true, false)
         DisableAllTimers()
     } else {
+		if (MANUAL_PLAY) {
+			Msgbox, 4, % " Azur Lane Helper", % "Manual play assistant is on, would you like to switch to AutoPlay assistant?"
+			IfMsgBox, No
+				exit
+			MANUAL_PLAY := false
+    	}
+
         RetrieveEmuPos()
         IS_MONITORING := true
         UpdateTrayStatus()
+		DisableAllTimers()
         AlertShikikan("monitoring is now active", true, false)
         SetTimer, ImportantEventsCheck, 1000
         TimeOutTick("start")
@@ -91,22 +109,30 @@ return
     }
 return
 
-RetrieveEmuPos()
-{
-    ; Make sure to rename the Bluestacks emulator containing Azur Lane to "Azur Lane"
-    WinGetPos, BLUESTACKS_X, BLUESTACKS_Y, BLUESTACKS_W, BLUESTACKS_H, Azur Lane
-    ; Bluestacks' toolbar is a flat 40 (no matter the resolution), and it's not included in ControlClick's scope
-    ; Exclude the emulator's toolbar in the dimensions
-    BLUESTACKS_Y += 40, BLUESTACKS_H -= 40
-    if (BLUESTACKS_X = "" || BLUESTACKS_X < 0) {
-        Msgbox, 0, % " Azur Lane Helper: Monitoring error", % "Azur Lane Window was not found. Please make sure that it is visible on the screen and recalibrate by restarting the monitoring status (Shift + F12). " . "X: " X . " Y: " Y "." 
-        exit
-    }
++F9::
+    Critical
 
-    Msgbox, 4, % " Azur Lane Helper", % "The position and dimensions of Bluestacks are:`n" "X: " BLUESTACKS_X "`nY: " BLUESTACKS_Y "`nW: " BLUESTACKS_W "`nH: " BLUESTACKS_H "`n`nIf these are correct, press YES; otherwise press NO and recalibrate by pressing Shift+F12 again."
-    IfMsgBox, No
-        exit
-}
+	if (MANUAL_PLAY) {
+		MANUAL_PLAY := false
+		DisableAllTimers()
+		UpdateTrayStatus()
+		AlertShikikan("manual play assistant is now off", true, false)
+	} else {
+		if (IS_MONITORING) {
+			Msgbox, 4, % " Azur Lane Helper", % "AutoPlay assistant is on, would you like to switch to manual play assistant?"
+			IfMsgBox, No
+				exit
+			IS_MONITORING := false
+    	}
+		RetrieveEmuPos()
+        MANUAL_PLAY := true
+        UpdateTrayStatus()
+        DisableAllTimers()
+        AlertShikikan("manual play helper is now on", true, false)
+        SetTimer, ManualPlayChecks, 1000
+		TimeOutTick("start")
+	}
+return
 
 ClickContinue()
 {
@@ -128,10 +154,12 @@ UpdateTrayStatus()
     monitoringStatus := (IS_MONITORING) ? "on" : "off"
     , autopilotStatus := (AUTOPILOT_MODE) ? "on" : "off"
     , pushNotifStatus := (NOTIFY_EVENTS) ? "on" : "off"
+	, manualPlayStatus := (MANUAL_PLAY) ? "on" : "off"
     Menu, Tray, Tip, % APP_VERSION . "`n`n"
                                    . "Monitoring: " monitoringStatus "`n"
                                    . "Autopilot: " autopilotStatus "`n"
-                                   . "Push Notifs: " pushNotifStatus
+                                   . "Push Notifs: " pushNotifStatus "`n`n"
+                                   . "Manual helper: " manualPlayStatus
 }
 
 DisableAllTimers()
@@ -142,6 +170,11 @@ DisableAllTimers()
     SetTimer, CheckDefeatedWindow, Off
     SetTimer, CheckDepletedOil, Off
     SetTimer, ImportantEventsCheck, Off
+
+    SetTimer, CheckDefeatedWindowM, Off
+    SetTimer, CheckBattleCompletion, Off
+    SetTimer, ManualPlayChecks, Off
+
     SetTimer, TimeOut, Off
 }
 
@@ -157,7 +190,11 @@ TimeOutTick(trigger)
 
 ImportantEventAlert(message)
 {
-    SetTimer, ImportantEventsCheck, Off
+	if (IS_MONITORING)
+		SetTimer, ImportantEventsCheck, Off
+	else if (MANUAL_PLAY)
+		SetTimer, ManualPlayChecks, Off
+
     ResetTimeOut()
     AlertShikikan(message)
 }
@@ -203,6 +240,7 @@ ImportantEventsCheck:
 return
 
 ;====================Check if the important event windows were closed====================;
+; These subroutines are for FARMING HELPER, the MANUAL HELPER is at the bottom of this
 
 CheckLevelCompletion:
     if !(Event.levelComplete()) ; Complete banner is closed
@@ -249,7 +287,42 @@ CheckDepletedOil:
     }
 return
 
+
+ManualPlayChecks:
+    ; Arrange the events from likely to the most unlikely for faster performance
+    if (Event.battleComplete()) ; Battle is complete
+    {
+		ImportantEventAlert("your boatgrills have finished the battle")
+		SetTimer, CheckBattleCompletion, 1000
+    }
+    else if (Event.partyAnnihilated()) ; Party was annihilated
+    {
+        ImportantEventAlert("the party was defeated")
+        SetTimer, CheckDefeatedWindowM, 1000
+    }
+return
+
+;===================================Manual Play Checks===================================;
+CheckBattleCompletion:
+    if !(Event.battleComplete()) ; Battle complete window is closed
+    {
+		Gui, EventAlert:Destroy
+		SetTimer, CheckBattleCompletion, Off
+		SetTimer, ManualPlayChecks, 1000
+    }
+return
+
+CheckDefeatedWindowM:
+    if !(Event.partyAnnihilated()) ; Fleet defeated window is closed
+    {
+        Gui, EventAlert:Destroy
+        SetTimer, CheckDefeatedWindowM, Off
+        SetTimer, ManualPlayChecks, 1000
+    }
+return
+
 ;========================================================================================;
+
 
 TimeOut:
     DisableAllTimers()
