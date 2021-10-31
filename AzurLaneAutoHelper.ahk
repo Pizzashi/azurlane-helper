@@ -7,7 +7,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
 ;@Ahk2Exe-SetCompanyName Furaico
-;@Ahk2Exe-SetVersion 0.5.2.0
+;@Ahk2Exe-SetVersion 0.5.3.0
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -19,11 +19,14 @@ ListLines Off                                   ; Turns off logging script actio
 #KeyHistory 0                                   ; Turns off loggins keystrokes for improved performance
 */
 
-global APP_VERSION := "Azur Lane Auto Helper v0.5.2.0"
+global APP_VERSION := "Azur Lane Auto Helper v0.5.3.0"
 Menu, Tray, Tip, % APP_VERSION
 
 ; This code appears only in the compiled script
 /*@Ahk2Exe-Keep
+Menu, Tray, Add, %APP_VERSION%, QuitHelper
+Menu, Tray, Disable, %APP_VERSION%
+Menu, Tray, Add ; Adds line separator
 Menu, Tray, NoStandard
 Menu, Tray, Add, Exit, QuitHelper
 */
@@ -33,6 +36,7 @@ Menu, Tray, Add, Exit, QuitHelper
 #Include Assets.ahk
 #Include GUI.ahk
 #Include Push.ahk
+#Include AutoClicker.ahk
 
 UpdateTrayStatus() ; Initial tray update
 
@@ -55,7 +59,6 @@ global MANUAL_PLAY := false
 
 +F12::
     Critical
-
     if (IS_MONITORING) {
         IS_MONITORING := false
         UpdateTrayStatus()
@@ -81,7 +84,6 @@ return
 
 +F11::
     Critical
-    
     if (AUTOPILOT_MODE) {
         AUTOPILOT_MODE := false
         UpdateTrayStatus()
@@ -96,7 +98,6 @@ return
 
 +F10::
     Critical
-    
     if (NOTIFY_EVENTS) {
         NOTIFY_EVENTS := false
         UpdateTrayStatus()
@@ -111,7 +112,6 @@ return
 
 +F9::
     Critical
-
 	if (MANUAL_PLAY) {
 		MANUAL_PLAY := false
 		DisableAllTimers()
@@ -134,20 +134,6 @@ return
 	}
 return
 
-ClickContinue()
-{
-    ; https://www.autohotkey.com/boards/viewtopic.php?f=7&t=33596
-    ; ctrl + f: "click without moving the cursor"
-    
-    ; clickX and clickY values were retrieved with experimental methods using proportions  
-    clickX := "x" . ( (BLUESTACKS_W)*5 )//8
-    , clickY := "y" . ( (BLUESTACKS_H)*13 )//15
-
-    emuHwnd := DllCall("user32\WindowFromPoint", "UInt64", (BLUESTACKS_X+100 & 0xFFFFFFFF)|(BLUESTACKS_Y+100 << 32), "Ptr")
-            
-    ControlClick,, % "ahk_id " emuHwnd,,,, NA %clickX% %clickY%
-}
-
 ; Depends on the superglobal variables IS_MONITORING and AUTOPILOT_MODE
 UpdateTrayStatus()
 {
@@ -155,11 +141,10 @@ UpdateTrayStatus()
     , autopilotStatus := (AUTOPILOT_MODE) ? "on" : "off"
     , pushNotifStatus := (NOTIFY_EVENTS) ? "on" : "off"
 	, manualPlayStatus := (MANUAL_PLAY) ? "on" : "off"
-    Menu, Tray, Tip, % APP_VERSION . "`n`n"
-                                   . "Monitoring: " monitoringStatus "`n"
-                                   . "Autopilot: " autopilotStatus "`n"
-                                   . "Push Notifs: " pushNotifStatus "`n`n"
-                                   . "Manual helper: " manualPlayStatus
+    Menu, Tray, Tip, % "Monitoring: " monitoringStatus "`n"
+                     . "Autopilot: " autopilotStatus "`n"
+                     . "Push Notifs: " pushNotifStatus "`n`n"
+                     . "Manual helper: " manualPlayStatus
 }
 
 DisableAllTimers()
@@ -169,6 +154,7 @@ DisableAllTimers()
     SetTimer, CheckBoatGrill, Off
     SetTimer, CheckDefeatedWindow, Off
     SetTimer, CheckDepletedOil, Off
+    SetTimer, CheckCertificateNotice, Off
     SetTimer, ImportantEventsCheck, Off
 
     SetTimer, CheckDefeatedWindowM, Off
@@ -237,6 +223,16 @@ ImportantEventsCheck:
         ImportantEventAlert("your oil supply has ran out")
         SetTimer, CheckDepletedOil, 1000
     }
+    else if (Event.receivedCertificate()) ; Found certificate of support
+    {
+        if (AUTOPILOT_MODE) { ; Automatically click continue
+            ResetTimeOut()
+            ClickSupportCert()
+        } else {
+            ImportantEventAlert("you have obtained a certificate of support")
+            SetTimer, CheckCertificateNotice, 1000
+        }
+    }
 return
 
 ;====================Check if the important event windows were closed====================;
@@ -287,6 +283,14 @@ CheckDepletedOil:
     }
 return
 
+CheckCertificateNotice:
+    if !(Event.receivedCertificate())
+    {
+        Gui, EventAlert:Destroy
+        SetTimer, CheckCertificateNotice, Off
+        SetTimer, ImportantEventsCheck, 1000
+    }
+return
 
 ManualPlayChecks:
     ; Arrange the events from likely to the most unlikely for faster performance

@@ -4,6 +4,7 @@ global BATTLE_COMPLETE := "|<TOUCH>*153$66.zzzDzzzyTzz01s1wS7k73k01k0wS7U33kU1k0
 , NEW_SHIP := "|<NEW>*142$69.zz0w0Ts1U007zk7U3z08000zy0w0Ts10007Xk7U3z08400kS0w0Ts00U003k7U3r004000C0w0Es00U001k7U07004010C0w00s01U080k7U0700A01060w00s01k080k7U0DU0C01020w07w01k080E7U3zU0C01000w0Tw01k0s007U3zU0T0z000w0Tw03sTs007U3zU0TTz000w0zw03zzs007U7nk0Tzz000w0ES0Dzzs007U03kDzzz000w00SDzzzs407U03zzzzz0U0w00Tzzzzw"
 , PARTY_ANNIHILATED := "|<Improve>*140$67.nzzzzzzzzzzUzzzzzzzzzzkTzzzzzzzzzs001U70UNwkA00000000Q02000000006010000M0ss00Q0000C0MQ0000000708C00080003067203w0000U3X101y000001k1UsPU0000Fw1sS0zzzw1zzrzzvzzzz7zzzzzzzzzzXzzzzzzzzzzlzzzzzzz"
 , OIL_RANOUT := "|<Oil>*150$21.zzbzXsNk7bA0TtXXb8Q8N7l38y8N3l3AQMNV3360wMsDb4"
+, CERTIFICATE_OF_SUPPORT := "|<Certifica>*172$69.zzzzzzbzbzzzzzzzzwS0Tzzs7zzz7XUXzzy0TzzsywTzzzUbvzq7z3zxzQTw340AEAQ30Xz0M21X1X0M0Tsl1kwMQMTw3y08T7XXX7y4Tk13swQQMz0Xy7sT7XXX7sY4Mz3swQQMT4k30MT1XXX0M70w33wAQQQ30U"
 
 RetrieveEmuPos()
 {
@@ -54,6 +55,11 @@ class Event
         ; Since no one buys oil, this function wont be able to distinguish between intentionally buying oil and running out of oil while sortieing
         ; FindText(2297, 216, 2331, 238, 0, 0, OIL_RANOUT)
         return this.findImg(OIL_RANOUT, 0)
+    }
+
+    receivedCertificate()
+    {
+        return this.findImg(CERTIFICATE_OF_SUPPORT, 0)
     }
 
     findImg(Image, Region := 0, errTol1 := 0, errTol2 := 0)
