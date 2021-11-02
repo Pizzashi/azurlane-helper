@@ -15,7 +15,7 @@
       }
    }
 
-   notifIcon := "https://i.ibb.co/7yz04fv/L4egc3-U-252525255-B1-252525255-D.png"
+   notifIcon := "https://i.ibb.co/ZNCYFbc/saratoga.png"
    notifTitle := "Azur Lane Helper"
    notifMessage := pushMessage
 

@@ -5,11 +5,13 @@ global BATTLE_COMPLETE := "|<TOUCH>*153$66.zzzDzzzyTzz01s1wS7k73k01k0wS7U33kU1k0
 , PARTY_ANNIHILATED := "|<Improve>*140$67.nzzzzzzzzzzUzzzzzzzzzzkTzzzzzzzzzs001U70UNwkA00000000Q02000000006010000M0ss00Q0000C0MQ0000000708C00080003067203w0000U3X101y000001k1UsPU0000Fw1sS0zzzw1zzrzzvzzzz7zzzzzzzzzzXzzzzzzzzzzlzzzzzzz"
 , OIL_RANOUT := "|<Oil>*150$21.zzbzXsNk7bA0TtXXb8Q8N7l38y8N3l3AQMNV3360wMsDb4"
 , CERTIFICATE_OF_SUPPORT := "|<Certifica>*172$69.zzzzzzbzbzzzzzzzzwS0Tzzs7zzz7XUXzzy0TzzsywTzzzUbvzq7z3zxzQTw340AEAQ30Xz0M21X1X0M0Tsl1kwMQMTw3y08T7XXX7y4Tk13swQQMz0Xy7sT7XXX7sY4Mz3swQQMT4k30MT1XXX0M70w33wAQQQ30U"
+, LOW_MOOD := "|<attack.>*166$59.zzzzzzztzzzzzzzzzVzzzwyDzzz3zzzkwTzzy7zw70EC3wAATk600M3U8EzU430k70k3zwAD7yADUDz0MSDU8T0Tw0kwS0Ey0zkVVssEVw0wU31kk1UMEkU71Uk30ElV0T3VVDVnna"
 
 RetrieveEmuPos()
 {
     ; Make sure to rename the Bluestacks emulator containing Azur Lane to "Azur Lane"
     WinGetPos, BLUESTACKS_X, BLUESTACKS_Y, BLUESTACKS_W, BLUESTACKS_H, Azur Lane
+    
     ; Bluestacks' toolbar is a flat 40 (no matter the resolution), and it's not included in ControlClick's scope
     ; Exclude the emulator's toolbar in the dimensions
     BLUESTACKS_Y += 40, BLUESTACKS_H -= 40
@@ -18,9 +20,11 @@ RetrieveEmuPos()
         exit
     }
 
-    Msgbox, 4, % " Azur Lane Helper", % "The position and dimensions of Bluestacks are:`n" "X: " BLUESTACKS_X "`nY: " BLUESTACKS_Y "`nW: " BLUESTACKS_W "`nH: " BLUESTACKS_H "`n`nIf these are correct, press YES; otherwise press NO and recalibrate by restarting the monitoring status."
-    IfMsgBox, No
+    if (DEBUG_MODE) {
+        Msgbox, 4, % " Azur Lane Helper", % "The position and dimensions of Bluestacks are:`n" "X: " BLUESTACKS_X "`nY: " BLUESTACKS_Y "`nW: " BLUESTACKS_W "`nH: " BLUESTACKS_H "`n`nIf these are correct, press YES; otherwise press NO and recalibrate by restarting the monitoring status."
+        IfMsgBox, No
         exit
+    }
 }
 
 class Event
@@ -60,6 +64,11 @@ class Event
     receivedCertificate()
     {
         return this.findImg(CERTIFICATE_OF_SUPPORT, 0)
+    }
+
+    lowMood()
+    {
+        return this.findImg(LOW_MOOD, 0)
     }
 
     findImg(Image, Region := 0, errTol1 := 0, errTol2 := 0)
