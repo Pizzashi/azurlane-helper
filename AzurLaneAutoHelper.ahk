@@ -7,7 +7,7 @@
 ;@Ahk2Exe-AddResource Main.ico, 208  ; Replaces 'S on red'
 ;@Ahk2Exe-SetCopyright Copyright @ Baconfry 2021
 ;@Ahk2Exe-SetCompanyName Furaico
-;@Ahk2Exe-SetVersion 0.5.4.0
+;@Ahk2Exe-SetVersion 0.5.5.0
 ;===========================================================;
 
 #NoEnv                                          ; Needed for blazing fast performance
@@ -19,7 +19,14 @@ ListLines Off                                   ; Turns off logging script actio
 #KeyHistory 0                                   ; Turns off loggins keystrokes for improved performance
 */
 
-global APP_VERSION := "Azur Lane Auto Helper v0.5.4.0"
+#Include FindText.ahk
+#Include Checks.ahk
+#Include Assets.ahk
+#Include GUI.ahk
+#Include Push.ahk
+#Include AutoClicker.ahk
+
+global APP_VERSION := "Azur Lane Auto Helper v0.5.5.0"
 Menu, Tray, Tip, % APP_VERSION
 
 ; This code appears only in the compiled script
@@ -30,13 +37,6 @@ Menu, Tray, Add ; Adds line separator
 Menu, Tray, NoStandard
 Menu, Tray, Add, Exit, QuitHelper
 */
-
-#Include FindText.ahk
-#Include Checks.ahk
-#Include Assets.ahk
-#Include GUI.ahk
-#Include Push.ahk
-#Include AutoClicker.ahk
 
 ; Check for events that require prompts every three seconds
 ; Switch is Shift + F12

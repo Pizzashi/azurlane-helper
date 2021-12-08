@@ -16,7 +16,7 @@ RetrieveEmuPos()
     ; Exclude the emulator's toolbar in the dimensions
     BLUESTACKS_Y += 40, BLUESTACKS_H -= 40
     if (BLUESTACKS_X = "" || BLUESTACKS_X < 0) {
-        Msgbox, 0, % " Azur Lane Helper: Monitoring error", % "Azur Lane Window was not found. Please make sure that it is visible on the screen and recalibrate by restarting the monitoring status. " . "X: " X . " Y: " Y "." 
+        Msgbox, 0, % " Azur Lane Helper: Monitoring error", % "Azur Lane seems to be out of bounds. Please make sure that it is COMPLETELY visible on the screen and recalibrate by restarting the monitoring status. " . "X: " X . " Y: " Y "." 
         exit
     }
 
