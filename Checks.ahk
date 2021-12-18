@@ -5,7 +5,8 @@ global BATTLE_COMPLETE      := "|<TOUCH>*153$66.zzzDzzzyTzz01s1wS7k73k01k0wS7U33
 , PARTY_ANNIHILATED         := "|<Improve>*140$67.nzzzzzzzzzzUzzzzzzzzzzkTzzzzzzzzzs001U70UNwkA00000000Q02000000006010000M0ss00Q0000C0MQ0000000708C00080003067203w0000U3X101y000001k1UsPU0000Fw1sS0zzzw1zzrzzvzzzz7zzzzzzzzzzXzzzzzzzzzzlzzzzzzz"
 , OIL_RANOUT                := "|<Oil>*150$21.zzbzXsNk7bA0TtXXb8Q8N7l38y8N3l3AQMNV3360wMsDb4"
 , CERTIFICATE_OF_SUPPORT    := "|<Certifica>*172$69.zzzzzzbzbzzzzzzzzwS0Tzzs7zzz7XUXzzy0TzzsywTzzzUbvzq7z3zxzQTw340AEAQ30Xz0M21X1X0M0Tsl1kwMQMTw3y08T7XXX7y4Tk13swQQMz0Xy7sT7XXX7sY4Mz3swQQMT4k30MT1XXX0M70w33wAQQQ30U"
-, LOW_MOOD                  := "|<Exhaust>*165$66.UTzlzzzzzzz0DzlzzzzzzX0DzlzzzzzzX3wtk7kSCS300QFk1U6AA200C3lVy6AATX0S3lVk6AA7X7y3lVU6AC3X7y3lVW6ADVX0A1lV260AVV00ElVU60A3U00slXV72A3kU"
+, LOW_MOOD                  := "|<Mood>*170$44.zzzzzzz0yDzzzzUD3zzzzs3kzzzzy0MD1y3s063UD0Q00Us1U7000AAMsVUEX76C8M48llXW612AAMkVUNXU60Q07sw3k708"
+, LOW_MOOD_2                := "|<Exhaust>*165$66.UTzlzzzzzzz0DzlzzzzzzX0DzlzzzzzzX3wtk7kSCS300QFk1U6AA200C3lVy6AATX0S3lVk6AA7X7y3lVU6AC3X7y3lVW6ADVX0A1lV260AVV00ElVU60A3U00slXV72A3kU"
 
 RetrieveEmuPos()
 {
@@ -68,7 +69,10 @@ class Event
 
     lowMood()
     {
-        return this.findImg(LOW_MOOD, 0)
+        if (this.findImg(LOW_MOOD, 0))
+            return 1
+        else
+            return this.findImg(LOW_MOOD_2, 0)
     }
 
     findImg(Image, Region := 0, errTol1 := 0, errTol2 := 0)
