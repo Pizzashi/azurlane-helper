@@ -9,15 +9,15 @@
             return
     }
 
-    assistantAvatar := Assets . "\saratoga.png"
+    assistantAvatar := Assets . "\belfast.png"
 
     Gui, EventAlert:Destroy
 	Gui, EventAlert:New, +ToolWindow -Caption +AlwaysOnTop +HwndEventNotif
-    Gui, EventAlert:Color, c1a5c3 ; Original color is 999999
+    Gui, EventAlert:Color, FFFF65
     Gui, EventAlert:Margin, 15, 10
-	Gui, EventAlert:Font, s14, Segoe UI
-    Gui, EventAlert:Add, Picture, h50 w-1, % assistantAvatar
-	Gui, EventAlert:Add, Text, x+10 cWhite yp+11 Center, % message
+	Gui, EventAlert:Font, s13 c00008c, Segoe UI
+    Gui, EventAlert:Add, Picture, h40 w-1, % assistantAvatar
+	Gui, EventAlert:Add, Text, x+10 yp+7 Center, % message
 	Gui, EventAlert:Show, y20 x20 NoActivate
 
     OnMessage(0x201, "FadeOut")
