@@ -109,6 +109,7 @@ return
     else {
         NOTIFY_EVENTS := true
         UpdateTrayStatus()
+        AlertShikikan("Shikikan, please wait for a bit.", false, false)
         AlertShikikan("Shikikan, phone notifications are now on.", true, true, false)
     }
 return
@@ -145,10 +146,11 @@ UpdateTrayStatus()
     , autopilotStatus := (AUTOPILOT_MODE) ? "on" : "off"
     , pushNotifStatus := (NOTIFY_EVENTS) ? "on" : "off"
 	, manualPlayStatus := (MANUAL_PLAY) ? "on" : "off"
-    Menu, Tray, Tip, % "Monitoring: " monitoringStatus "`n"
+    Menu, Tray, Tip, % "AL Helper`n`n"
+                     . "Monitoring: " monitoringStatus "`n"
                      . "Autopilot: " autopilotStatus "`n"
-                     . "Push Notifs: " pushNotifStatus "`n`n"
-                     . "Manual helper: " manualPlayStatus
+                     . "Push Notifications: " pushNotifStatus "`n"
+                     . "Manual Helper: " manualPlayStatus
 }
 
 DisableAllTimers()
